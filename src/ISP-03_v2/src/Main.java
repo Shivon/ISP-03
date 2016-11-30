@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 /**
  * Created by murat on 30.11.16.
  */
@@ -35,7 +37,7 @@ public class Main {
             goalState.setAction("goal state");
 
 
-            Algorithm.generic_search(startState, goalState);
+            Algorithm.generic_search(startState, goalState, Algorithm.AlgorithmType.Heuristic);
         }catch (Exception e){
             System.err.print(e.getMessage());
         }

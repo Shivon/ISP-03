@@ -8,6 +8,7 @@ public class State implements IZustand{
     private HashMap<String, Block> blocks;
     private List<MyTupel> relations;
     private String action = "";
+    private int score = 0;
 
     private final String TABLE = "table";
     private final String BLOCK_IS_NOT_CLEAR = "blocknotclear";
@@ -212,5 +213,41 @@ public class State implements IZustand{
 
     public Block getBlock(String name){
         return blocks.get(name);
+    }
+
+    public void calculateHeurisitc(State goalState) {
+        Block block1This = this.blocks.get("block1");
+        Block block2This = this.blocks.get("block2");
+        Block block3This = this.blocks.get("block3");
+        Block block4This = this.blocks.get("block4");
+
+        Block block1GoalState = goalState.blocks.get("block1");
+        Block block2GoalState = goalState.blocks.get("block2");
+        Block block3GoalState = goalState.blocks.get("block3");
+        Block block4GoalState = goalState.blocks.get("block4");
+
+        if(block1This.isClear() && block1GoalState.isClear()) score++;
+        if(block1This.isOnTable() && block1GoalState.isOnTable()) score++;
+        if(block1This.blockUnder().equals(block1GoalState.blockUnder())) score++;
+        if(block1This.blockOver().equals(block1GoalState.blockOver())) score ++;
+
+        if(block2This.isClear() && block2GoalState.isClear()) score++;
+        if(block2This.isOnTable() && block2GoalState.isOnTable()) score++;
+        if(block2This.blockUnder().equals(block2GoalState.blockUnder())) score++;
+        if(block2This.blockOver().equals(block2GoalState.blockOver())) score ++;
+
+        if(block3This.isClear() && block3GoalState.isClear()) score++;
+        if(block3This.isOnTable() && block3GoalState.isOnTable()) score++;
+        if(block3This.blockUnder().equals(block3GoalState.blockUnder())) score++;
+        if(block3This.blockOver().equals(block3GoalState.blockOver())) score ++;
+
+        if(block4This.isClear() && block4GoalState.isClear()) score++;
+        if(block4This.isOnTable() && block4GoalState.isOnTable()) score++;
+        if(block4This.blockUnder().equals(block4GoalState.blockUnder())) score++;
+        if(block4This.blockOver().equals(block4GoalState.blockOver())) score ++;
+    }
+
+    public int getHeurisitcScore(){
+        return score;
     }
 }
