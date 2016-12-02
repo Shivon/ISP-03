@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -8,6 +9,7 @@ public class MyTree {
 
     private List<Path> paths;
     int count = 0;
+    private boolean empty;
 
     public MyTree(){
         paths = new ArrayList<>();
@@ -20,6 +22,11 @@ public class MyTree {
 
     public void putAtFront(Path path){
         paths.add(0, path);
+        count++;
+    }
+
+    public void putAt(Path path, int index){
+        paths.add(index, path);
         count++;
     }
 
@@ -42,4 +49,27 @@ public class MyTree {
     }
 
 
+    public List<Path> paths(){
+        return paths;
+    }
+
+    public void putExistingPathToFront(Path path){
+        int index = paths.indexOf(path);
+        paths.remove(index);
+        paths.add(0, path);
+    }
+
+    public void putExistingPathAt(Path path, int index){
+        int indexOld = paths.indexOf(path);
+        paths.remove(indexOld);
+        paths.add(index, path);
+    }
+
+    public boolean isEmpty() {
+        return paths.isEmpty();
+    }
+
+    public int size() {
+        return paths.size();
+    }
 }

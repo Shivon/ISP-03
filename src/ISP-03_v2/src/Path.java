@@ -5,7 +5,7 @@ import java.util.List;
  * Created by murat on 30.11.16.
  */
 public class Path {
-    private int length = 0;
+    private int size = 0;
     private List<State> states;
     private boolean empty = true;
 
@@ -19,12 +19,12 @@ public class Path {
 
     public void put(State state){
         states.add(0, state);
-        length++;
+        size++;
         empty = false;
     }
 
-    public int getLength(){
-        return length;
+    public int size(){
+        return size;
     }
 
     public State getFirstState(){
@@ -32,12 +32,12 @@ public class Path {
     }
 
     public State getLastState(){
-        return states.get(length);
+        return states.get(size);
     }
 
     public Path copy(){
         Path p = new Path();
-        p.length = this.length;
+        p.size = this.size;
         p.empty = this.empty;
         for(State z : states){
             p.states.add(z);
@@ -45,6 +45,14 @@ public class Path {
         return p;
     }
 
+
+    public void showPath() {
+        int rotations = 0;
+        for(int i = states.size()-1; i >= 0; i--){
+            System.out.println(states.get(i).showState(rotations));
+            rotations++;
+        }
+    }
 
 
 }
