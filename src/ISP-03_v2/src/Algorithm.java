@@ -9,10 +9,18 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Algorithm {
 
     private static List<State> closeList;
-    public static Path generic_search(State startState, State goalState, AlgorithmType type) throws Exception {
+    private static AlgorithmType algorithmType;
+    private static int depth;
+    private static State startState;
+    public static int stateCheck = 0;
+    public static long timeEnd;
+
+    public static Path generic_search(State startingState, State goalState, AlgorithmType type) throws Exception {
+        startState = startingState;
         closeList = new ArrayList<>();
         closeList.add(startState);
-
+        algorithmType = type;
+        depth = 1;
         MyTree tree = new MyTree();
         Path startPath = new Path();
         startState.calculateHeurisitc(goalState);
@@ -38,27 +46,40 @@ public class Algorithm {
                 List<State> children = expand(path.getFirstState(), goalState);
                 List<Path> newpaths = generate_new_paths(children, path);
 
-                insertNewPaths(tree,newpaths, type, path.getFirstState(), goalState);
+                insertNewPaths(tree,newpaths, path.getFirstState(), goalState);
             }
 
         }while(!success);
-        long timeEnd = System.currentTimeMillis() - timeStart;
-        System.out.println("Dauer: " + timeEnd);
+        timeEnd = System.currentTimeMillis() - timeStart;
         return path;
     }
 
-    private static void insertNewPaths(MyTree openList, List<Path> newpaths, AlgorithmType type, State actualState, State goalState) throws Exception {
+    private static void insertNewPaths(MyTree openList, List<Path> newpaths, State actualState, State goalState) throws Exception {
 
         Path worstPath = null;
-        int score = Integer.MAX_VALUE;
         List<Path> newPathTmp = new ArrayList<>(newpaths);
         openList.deleteFirstPath();
 
 
-        switch (type){
+        switch (algorithmType){
             case Depthsearch:
                 for(Path p : newpaths){
                     openList.putAtFront(p);
+                }
+                break;
+            case Iterativ_Depthsearch:
+                for(Path p : newpaths){
+                    if(p.size() <= depth + 1){ // +1, weil elternknoten auch im pfad enthalten ist
+                        openList.putAtFront(p);
+                    }
+                }
+
+                if(openList.isEmpty()){
+                    depth++;
+                    Path startPath = new Path();
+                    startPath.put(startState);
+                    openList.putAtFront(startPath);
+                    closeList.clear();
                 }
                 break;
             case BergsteigenBacktracking:
@@ -68,12 +89,13 @@ public class Algorithm {
                 }
                 break;
             case Hill_Climbing:
-                worstPath = getWorstPath(newPathTmp);
-                openList.putAtFront(worstPath);
-
+                while(!newPathTmp.isEmpty()){
+                    worstPath = getWorstPath(newPathTmp);
+                    openList.putAtFront(worstPath);
+                }
 
                 //lokales maximum erreicht, zufälliges springen
-                if(openList.getFirstPath().getFirstState().getHeurisitcScore() <= actualState.getHeurisitcScore()){
+                if(openList.getFirstPath().getFirstState().getHeuristic() >= actualState.getHeuristic()){
                     int rand = ThreadLocalRandom.current().nextInt(0, openList.size());
                     openList.putExistingPathToFront(openList.paths().get(rand));
                 }
@@ -87,7 +109,7 @@ public class Algorithm {
                     for(Path p : openList.paths()){
                         //Vergleich gefunden Zustand mit den bereits in der openlist enthaltenen Zuständen
                         if(!worstPath.getFirstState().equals(p.getFirstState())){
-                            if(worstPath.getFirstState().getHeurisitcScore() >= p.getFirstState().getHeurisitcScore()){
+                            if(worstPath.getFirstState().getHeuristic() <= p.getFirstState().getHeuristic()){
                                 index = openList.paths().indexOf(p);
                                 break;
                             }
@@ -118,8 +140,8 @@ public class Algorithm {
                     boolean statesAreEqual = false;
                     for(Path p : openList.paths()){
                         //Gleich wie A-Stern nur das bisherige Kosten nicht betrachtet werden. D.h. Alle neuen Pfade werden
-                        //in die openlist gelegt. Es wird nur die positiven Bewertungen betrachtet
-                            if(worstPath.getFirstState().getHeurisitcScore() >= p.getFirstState().getHeurisitcScore()){
+                        //in die openlist gelegt.
+                            if(worstPath.getFirstState().getHeuristic() <= p.getFirstState().getHeuristic()){
                                 index = openList.paths().indexOf(p);
                                 break;
                             }
@@ -139,11 +161,13 @@ public class Algorithm {
 
     private static Path getWorstPath(List<Path> newPathTmp) {
         Path worstPath = null;
-        int score = Integer.MAX_VALUE;
+        int heuristic = Integer.MIN_VALUE;
         for(Path p : newPathTmp){
-            if(p.getFirstState().getHeurisitcScore() <= score){
+
+            if(p.getFirstState().getHeuristic() >= heuristic){
+
                 worstPath = p;
-                score = p.getFirstState().getHeurisitcScore();
+                heuristic = p.getFirstState().getHeuristic();
             }
         }
         newPathTmp.remove(worstPath);
@@ -168,12 +192,7 @@ public class Algorithm {
 
         Iterator iterator = actualState.getBlockIterator();
 
-        String[] blockNames = new String[4];
 
-        blockNames[0] = "block1";
-        blockNames[1] = "block2";
-        blockNames[2] = "block3";
-        blockNames[3] = "block4";
 
         while(iterator.hasNext()){
             Block b = (Block) iterator.next();
@@ -182,17 +201,19 @@ public class Algorithm {
                 if(!b.isOnTable()){
                     State z = actualState.put_block_on_table(b.get_name());
                     if(!closeListContains(z)){
-                        z.calculateHeurisitc(goalState);
+                        z.setDepth(actualState.getDepth());
+                        if(algorithmType != AlgorithmType.Depthsearch) z.calculateHeurisitc(goalState);
                         children.add(z);
                     }
                 }
-                for(String name : blockNames){
+                for(String name : actualState.getBlockNames()){
                     if(!b.get_name().equals(name)){
                         if(!actualState.getBlock(b.get_name()).blockUnder().equals(name)){
                             if(actualState.getBlock(name).isClear()){
                                 State z = actualState.put_block_on_block(b.get_name(), name);
                                 if(!closeListContains(z)){
-                                    z.calculateHeurisitc(goalState);
+                                    z.setDepth(actualState.getDepth());
+                                    if(algorithmType != AlgorithmType.Depthsearch) z.calculateHeurisitc(goalState);
                                     children.add(z);
                                 }
                             }
@@ -215,6 +236,7 @@ public class Algorithm {
     }
 
     private static boolean goal(State startState, State goalState) {
+        stateCheck++;
         if(startState.equals(goalState)) return true;
         return false;
     }
@@ -222,7 +244,7 @@ public class Algorithm {
     public enum AlgorithmType{
         Depthsearch,
         A_Star,
-        A_Star_Depthsearch,
+        Iterativ_Depthsearch,
         Hill_Climbing,
         Gierige_Bestensuche,
         BergsteigenBacktracking

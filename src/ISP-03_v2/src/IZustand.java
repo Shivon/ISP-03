@@ -3,7 +3,6 @@
  */
 public interface IZustand {
 
-    public boolean equals();
 
     public State copy() throws Exception;
 

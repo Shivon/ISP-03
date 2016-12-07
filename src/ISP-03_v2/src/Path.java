@@ -52,6 +52,7 @@ public class Path {
             System.out.println(states.get(i).showState(rotations));
             rotations++;
         }
+
     }
 
 

@@ -8,8 +8,8 @@ public class State implements IZustand{
     private HashMap<String, Block> blocks;
     private List<MyTupel> relations;
     private String action = "";
-    private int score = 0;
-    private int costs = 0;
+    private int heuristic = 0;
+    private int depth = 0;
 
     private final String TABLE = "table";
     private final String BLOCK_IS_NOT_CLEAR = "blocknotclear";
@@ -25,13 +25,66 @@ public class State implements IZustand{
         blocks.put(b3.get_name(), new Block(b3));
         blocks.put(b4.get_name(), new Block(b4));
 
-
+        depth = 0;
 
         relations = new ArrayList<>();
 
         buildRelations();
 
 
+    }
+
+    public State(Block b1, Block b2, Block b3, Block b4, Block b5){
+
+
+        blocks = new HashMap<>();
+        blocks.put(b1.get_name(), new Block(b1));
+        blocks.put(b2.get_name(), new Block(b2));
+        blocks.put(b3.get_name(), new Block(b3));
+        blocks.put(b4.get_name(), new Block(b4));
+        blocks.put(b5.get_name(), new Block(b5));
+
+        depth = 0;
+
+        relations = new ArrayList<>();
+
+        buildRelations();
+
+
+    }
+
+    public State(Block b1, Block b2, Block b3, Block b4, Block b5, Block b6){
+
+
+        blocks = new HashMap<>();
+        blocks.put(b1.get_name(), new Block(b1));
+        blocks.put(b2.get_name(), new Block(b2));
+        blocks.put(b3.get_name(), new Block(b3));
+        blocks.put(b4.get_name(), new Block(b4));
+        blocks.put(b5.get_name(), new Block(b5));
+        blocks.put(b6.get_name(), new Block(b6));
+
+        depth = 0;
+
+        relations = new ArrayList<>();
+
+        buildRelations();
+
+
+    }
+
+    private State(HashMap<String, Block> block) {
+        blocks = new HashMap<>();
+
+        for(Block b : block.values()){
+            blocks.put(b.get_name(), new Block(b));
+        }
+
+        depth = 0;
+
+        relations = new ArrayList<>();
+
+        buildRelations();
     }
 
     private void buildRelations() {
@@ -47,25 +100,16 @@ public class State implements IZustand{
         }
     }
 
-    @Override
-    public boolean equals() {
-        return false;
-    }
 
     @Override
     public State copy() throws Exception {
-        Block[] blocksArray = new Block[4];
-        int i = 0;
-        for(Block b : blocks.values()){
-            blocksArray[i] = b;
-            i++;
-        }
 
-        State z =  new State(blocksArray[0], blocksArray[1], blocksArray[2], blocksArray[3]);
 
-        z.isValid();
+        State state = new State(blocks);
 
-        return z;
+        state.isValid();
+
+        return state;
     }
 
     public State put_block_on_block(String blockToRotate, String onBlock) throws Exception {
@@ -159,8 +203,9 @@ public class State implements IZustand{
         String out = "";
         out += "\n--- State-Output-Begin---";
 
-        out += "\t Rotations : " + rotations + "\n\n";
-        out += "\t Score : " + score + "\n\n";
+        out += "\t Rotations: " + rotations + "\n\n";
+        out += "\t Heuristik: " + heuristic + "\n\n";
+
         out += action + "\n\n";
         for(MyTupel tupel : relations){
             out +=tupel.getUnder();
@@ -168,7 +213,6 @@ public class State implements IZustand{
             out +=tupel.getOver();
             out +="\n";
         }
-
         out += "\n--- State-Output-End---\n\n";
         return out;
     }
@@ -218,64 +262,110 @@ public class State implements IZustand{
     }
 
     public void calculateHeurisitc(State goalState) {
-        Block block1This = this.blocks.get("block1");
-        Block block2This = this.blocks.get("block2");
-        Block block3This = this.blocks.get("block3");
-        Block block4This = this.blocks.get("block4");
 
-        Block block1GoalState = goalState.blocks.get("block1");
-        Block block2GoalState = goalState.blocks.get("block2");
-        Block block3GoalState = goalState.blocks.get("block3");
-        Block block4GoalState = goalState.blocks.get("block4");
+        //calculateTableHeuristic(goalState);
 
-        if(block1This.isClear() && block1GoalState.isClear()) score++;
-        if(block1This.isOnTable() && block1GoalState.isOnTable()) score++;
+        //calculateTowerHeuristic(goalState);
 
-        if(!block1This.blockUnder().isEmpty()){
-            if(block1This.blockUnder().equals(block1GoalState.blockUnder())) score++;
-        }
-        if(!block1This.blockOver().isEmpty()){
-            if(block1This.blockOver().equals(block1GoalState.blockOver())) score ++;
-        }
+        calculateDifference(goalState);
 
 
-        if(block2This.isClear() && block2GoalState.isClear()) score++;
-        if(block2This.isOnTable() && block2GoalState.isOnTable()) score++;
-        if(!block2This.blockUnder().isEmpty()){
-            if(block2This.blockUnder().equals(block1GoalState.blockUnder())) score++;
-        }
-        if(!block2This.blockOver().isEmpty()){
-            if(block2This.blockOver().equals(block1GoalState.blockOver())) score ++;
-        }
 
-        if(block3This.isClear() && block3GoalState.isClear()) score++;
-        if(block3This.isOnTable() && block3GoalState.isOnTable()) score++;
-        if(!block3This.blockUnder().isEmpty()){
-            if(block3This.blockUnder().equals(block1GoalState.blockUnder())) score++;
-        }
-        if(!block3This.blockOver().isEmpty()){
-            if(block3This.blockOver().equals(block1GoalState.blockOver())) score ++;
-        }
 
-        if(block4This.isClear() && block4GoalState.isClear()) score++;
-        if(block4This.isOnTable() && block4GoalState.isOnTable()) score++;
-        if(!block4This.blockUnder().isEmpty()){
-            if(block4This.blockUnder().equals(block1GoalState.blockUnder())) score++;
-        }
-        if(!block4This.blockOver().isEmpty()){
-            if(block4This.blockOver().equals(block1GoalState.blockOver())) score ++;
-        }
-
-        //increase costs
-        costs++;
     }
 
-    public int getHeurisitcScore(){
-        return score;
+
+
+    private void calculateTableHeuristic(State goalState) {
+        for(Block blockThis : blocks.values()){
+            boolean end = false;
+            Block actualBlock = blockThis;
+            if(blockThis.isOnTable()){
+                if(!goalState.getBlock(blockThis.get_name()).isOnTable()){
+                    heuristic++;
+                    while(!end){
+                        if(!actualBlock.isClear()){
+                            heuristic++;
+                            actualBlock = blocks.get(actualBlock.blockOver());
+                        }else{
+                            end = true;
+                        }
+                    }
+                }
+            }
+        }
+        //heuristic += depth;
     }
 
-    public int getCosts(){
-        return costs;
+    private void calculateTowerHeuristic(State goalState) {
+        for(Block blockThis : blocks.values()){
+            boolean end = false;
+            Block actualBlock = blockThis;
+            if(blockThis.isOnTable()){
+                if(!goalState.getBlock(blockThis.get_name()).isOnTable()){
+                    heuristic++;
+                    while(!end){
+                        if(!actualBlock.isClear()){
+                            heuristic++;
+                            actualBlock = blocks.get(actualBlock.blockOver());
+                        }else{
+                            end = true;
+                        }
+                    }
+                }else{
+                    boolean towerIsNotEqual = false;
+                    while(!end){
+                        if(actualBlock.isClear()){
+                            end = true;
+                        }else{
+                            if(!towerIsNotEqual){
+                                if(!actualBlock.equals(goalState.getBlock(actualBlock.get_name()))){
+                                    towerIsNotEqual = true;
+                                }
+                            }
+                            actualBlock = goalState.getBlock(actualBlock.blockOver());
+                        }
+
+                        if(towerIsNotEqual){
+                            heuristic++;
+                        }
+                    }
+                }
+            }
+        }
+        //heuristic += depth;
     }
 
+    private void calculateDifference(State goalState){
+
+        for(Block blockThis : blocks.values()){
+            if(blockThis.isClear() != goalState.getBlock(blockThis.get_name()).isClear()) heuristic++;
+            if(blockThis.isOnTable() != goalState.getBlock(blockThis.get_name()).isOnTable()) heuristic++;
+            if(!blockThis.blockOver().equals(goalState.getBlock(blockThis.get_name()).blockOver())) heuristic++;
+            if(!blockThis.blockUnder().equals(goalState.getBlock(blockThis.get_name()).blockUnder())) heuristic++;
+        }
+        //heuristic += depth;
+    }
+
+    public void setDepth(int depth){
+        this.depth = depth;
+        this.depth++;
+    }
+
+    public int getDepth(){
+        return depth;
+    }
+    public int getHeuristic(){
+        return heuristic;
+    }
+
+
+    public List<String> getBlockNames(){
+
+        List<String> names = new ArrayList<>();
+        for(Block b : blocks.values()){
+            names.add(b.get_name());
+        }
+        return names;
+    }
 }
