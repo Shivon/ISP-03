@@ -258,7 +258,7 @@ public class State implements IState {
             if (blockThis.isOnTable()) {
                 if (!goalState.getBlock(blockThis.get_name()).isOnTable()) {
                     heuristic++;
-                    while(!end) {
+                    while (!end) {
                         if (!actualBlock.isClear()) {
                             heuristic++;
                             actualBlock = blocks.get(actualBlock.blockOver());
@@ -279,7 +279,7 @@ public class State implements IState {
             if (blockThis.isOnTable()) {
                 if (!goalState.getBlock(blockThis.get_name()).isOnTable()) {
                     heuristic++;
-                    while(!end) {
+                    while (!end) {
                         if (!actualBlock.isClear()) {
                             heuristic++;
                             actualBlock = blocks.get(actualBlock.blockOver());
@@ -289,7 +289,7 @@ public class State implements IState {
                     }
                 } else {
                     boolean towerIsNotEqual = false;
-                    while(!end) {
+                    while (!end) {
                         if (actualBlock.isClear()) {
                             end = true;
                         } else {

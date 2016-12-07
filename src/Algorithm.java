@@ -49,7 +49,7 @@ public class Algorithm {
                 insertNewPaths(tree,newpaths, path.getFirstState(), goalState);
             }
 
-        }while(!success);
+        }while (!success);
         timeEnd = System.currentTimeMillis() - timeStart;
         return path;
     }
@@ -83,13 +83,13 @@ public class Algorithm {
                 }
                 break;
             case BergsteigenBacktracking:
-                while(!newPathTmp.isEmpty()) {
+                while (!newPathTmp.isEmpty()) {
                     worstPath = getWorstPath(newPathTmp);
                     openList.putAtFront(worstPath);
                 }
                 break;
             case Hill_Climbing:
-                while(!newPathTmp.isEmpty()) {
+                while (!newPathTmp.isEmpty()) {
                     worstPath = getWorstPath(newPathTmp);
                     openList.putAtFront(worstPath);
                 }
@@ -101,7 +101,7 @@ public class Algorithm {
                 }
                 break;
             case A_Star:
-                while(!newPathTmp.isEmpty()) {
+                while (!newPathTmp.isEmpty()) {
                     //Findet den schlechtesten Kindknoten um ihn anschließend an die richtige position in der openlist zu legen
                     worstPath = getWorstPath(newPathTmp);
                     int index = -1;
@@ -133,7 +133,7 @@ public class Algorithm {
                 }
                 break;
             case Gierige_Bestensuche:
-                while(!newPathTmp.isEmpty()) {
+                while (!newPathTmp.isEmpty()) {
                     //Findet den schlechtesten Kindknoten um ihn anschließend an die richtige position in der openlist zu legen
                     worstPath = getWorstPath(newPathTmp);
                     int index = -1;
@@ -194,7 +194,7 @@ public class Algorithm {
 
 
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Block b = (Block) iterator.next();
 
             if (b.isClear()) {
