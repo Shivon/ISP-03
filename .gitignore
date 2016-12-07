@@ -10,15 +10,15 @@
 *.ear
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-# hs_err_pid*
+hs_err_pid*
 
 # IntelliJ related stuff
-# /.idea
-# ISP-03.iml
-# ISP-03_v2.iml
-# /out
-# /build
-# /*.iml
+/.idea
+ISP-03.iml
+ISP-03_v2.iml
+/out
+/build
+/*.iml
 
 /*/*.prv
 /*/*.pub
