@@ -1,22 +1,15 @@
-import java.util.ArrayList;
-
 /**
  * Created by murat on 30.11.16.
  */
 public class Main {
 
-    public static void main(String[] args){
-
-
+    public static void main(String[] args) {
         try{
             //runPraktikumBeispiel();
             //runEigenesBeispiel();
             //run5BlockBeispiel();
             run6BlockBeispiel();
-
-
-
-        }catch (Exception e){
+        }catch (Exception e) {
             System.err.print(e.getMessage());
         }
     }
@@ -53,10 +46,8 @@ public class Main {
         b5Goal.isValid();
         b6Goal.isValid();
 
-
         State goalState = new State(b1Goal,b2Goal,b3Goal,b4Goal, b5Goal, b6Goal);
         goalState.setAction("goal state");
-
 
         Path path = Algorithm.generic_search(startState, goalState, Algorithm.AlgorithmType.Hill_Climbing);
 
@@ -93,10 +84,8 @@ public class Main {
         b4Goal.isValid();
         b5Goal.isValid();
 
-
         State goalState = new State(b1Goal,b2Goal,b3Goal,b4Goal, b5Goal);
         goalState.setAction("goal state");
-
 
         Path path = Algorithm.generic_search(startState, goalState, Algorithm.AlgorithmType.Gierige_Bestensuche);
 
@@ -129,10 +118,8 @@ public class Main {
         b3Goal.isValid();
         b4Goal.isValid();
 
-
         State goalState = new State(b1Goal,b2Goal,b3Goal,b4Goal);
         goalState.setAction("goal state");
-
 
         Path path = Algorithm.generic_search(startState, goalState, Algorithm.AlgorithmType.Gierige_Bestensuche);
 
@@ -142,7 +129,6 @@ public class Main {
     }
 
     private static void runPraktikumBeispiel() throws Exception {
-
         Block b1Start = new Block("block1", false, true, "", "block2");
         Block b2Start = new Block("block2", true, false, "block1", "");
         Block b3Start = new Block("block3", true, true, "", "");
@@ -156,7 +142,6 @@ public class Main {
         State startState = new State(b1Start,b2Start,b3Start,b4Start);
         startState.setAction("start state");
 
-
         Block b1Goal = new Block("block1", true, false, "block4", "");
         Block b2Goal = new Block("block2", false, true, "", "block4");
         Block b3Goal = new Block("block3", true, true, "", "");
@@ -169,7 +154,6 @@ public class Main {
 
         State goalState = new State(b1Goal,b2Goal,b3Goal,b4Goal);
         goalState.setAction("goal state");
-
 
         Path path = Algorithm.generic_search(startState, goalState, Algorithm.AlgorithmType.Gierige_Bestensuche);
 

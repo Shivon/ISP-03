@@ -9,51 +9,47 @@ public class Path {
     private List<State> states;
     private boolean empty = true;
 
-    public Path(){
+    public Path() {
         states = new ArrayList<>();
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return empty;
     }
 
-    public void put(State state){
+    public void put(State state) {
         states.add(0, state);
         size++;
         empty = false;
     }
 
-    public int size(){
+    public int size() {
         return size;
     }
 
-    public State getFirstState(){
+    public State getFirstState() {
         return states.get(0);
     }
 
-    public State getLastState(){
+    public State getLastState() {
         return states.get(size);
     }
 
-    public Path copy(){
+    public Path copy() {
         Path p = new Path();
         p.size = this.size;
         p.empty = this.empty;
-        for(State z : states){
+        for (State z : states) {
             p.states.add(z);
         }
         return p;
     }
 
-
     public void showPath() {
         int rotations = 0;
-        for(int i = states.size()-1; i >= 0; i--){
+        for (int i = states.size()-1; i >= 0; i--) {
             System.out.println(states.get(i).showState(rotations));
             rotations++;
         }
-
     }
-
-
 }

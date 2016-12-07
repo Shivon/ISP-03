@@ -11,7 +11,7 @@ public class Block implements IBlock {
 
     private final String NOT_VALID_EXCEPTION_MESSAGE = "Block is not valid";
 
-    public Block(String name, boolean onTable, boolean clear, String blockOver, String blockUnder){
+    public Block(String name, boolean onTable, boolean clear, String blockOver, String blockUnder) {
         this.name = name;
         this.onTable = onTable;
         this.clear = clear;
@@ -19,7 +19,7 @@ public class Block implements IBlock {
         this.blockUnder = blockUnder;
     }
 
-    public Block(Block block){
+    public Block(Block block) {
         this.name = block.name;
         this.onTable = block.onTable;
         this.clear = block.clear;
@@ -39,8 +39,8 @@ public class Block implements IBlock {
     @Override
     public boolean put_on_table() throws Exception {
         isValid();
-        if(clear){
-            if(!onTable){
+        if (clear) {
+            if (!onTable) {
                 onTable = true;
                 blockUnder = "";
                 isValid();
@@ -54,8 +54,8 @@ public class Block implements IBlock {
     public boolean put_me_on_block(String block) throws Exception {
         isValid();
 
-        if(clear){
-            if(!blockUnder.equals(block)){
+        if (clear) {
+            if (!blockUnder.equals(block)) {
                 blockUnder = block;
                 onTable = false;
                 isValid();
@@ -69,8 +69,8 @@ public class Block implements IBlock {
     public boolean put_block_on_me(String block) throws Exception {
         isValid();
 
-        if(clear){
-            //if(block.equals(blockOver)){
+        if (clear) {
+            //if (block.equals(blockOver)) {
                 clear = false;
                 blockOver = block;
                 isValid();
@@ -108,21 +108,21 @@ public class Block implements IBlock {
     }
 
     public void isValid() throws Exception {
-        if(clear){
-            if(!blockOver.isEmpty()){
+        if (clear) {
+            if (!blockOver.isEmpty()) {
                 throw new Exception(NOT_VALID_EXCEPTION_MESSAGE + " " + name);
             }
         }
-        if(onTable){
-            if(!blockUnder.isEmpty()){
+        if (onTable) {
+            if (!blockUnder.isEmpty()) {
                 throw new Exception(NOT_VALID_EXCEPTION_MESSAGE + " " + name);
             }
         }
-        if(name.equals(blockUnder)){
+        if (name.equals(blockUnder)) {
             throw new Exception(NOT_VALID_EXCEPTION_MESSAGE + " " + name);
         }
 
-        if(name.equals(blockOver)){
+        if (name.equals(blockOver)) {
             throw new Exception(NOT_VALID_EXCEPTION_MESSAGE + " " + name);
         }
 

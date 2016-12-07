@@ -3,8 +3,7 @@ import java.util.*;
 /**
  * Created by murat on 30.11.16.
  */
-public class State implements IZustand{
-
+public class State implements IState {
     private HashMap<String, Block> blocks;
     private List<MyTupel> relations;
     private String action = "";
@@ -16,9 +15,7 @@ public class State implements IZustand{
     private final String STATE_IS_NOT_VALID = "State is not valid";
     private final String ROTATE_ERROR = "Rotate to same block not possible";
 
-    public State(Block b1, Block b2, Block b3, Block b4){
-
-
+    public State(Block b1, Block b2, Block b3, Block b4) {
         blocks = new HashMap<>();
         blocks.put(b1.get_name(), new Block(b1));
         blocks.put(b2.get_name(), new Block(b2));
@@ -30,13 +27,9 @@ public class State implements IZustand{
         relations = new ArrayList<>();
 
         buildRelations();
-
-
     }
 
-    public State(Block b1, Block b2, Block b3, Block b4, Block b5){
-
-
+    public State(Block b1, Block b2, Block b3, Block b4, Block b5) {
         blocks = new HashMap<>();
         blocks.put(b1.get_name(), new Block(b1));
         blocks.put(b2.get_name(), new Block(b2));
@@ -49,13 +42,9 @@ public class State implements IZustand{
         relations = new ArrayList<>();
 
         buildRelations();
-
-
     }
 
-    public State(Block b1, Block b2, Block b3, Block b4, Block b5, Block b6){
-
-
+    public State(Block b1, Block b2, Block b3, Block b4, Block b5, Block b6) {
         blocks = new HashMap<>();
         blocks.put(b1.get_name(), new Block(b1));
         blocks.put(b2.get_name(), new Block(b2));
@@ -69,14 +58,12 @@ public class State implements IZustand{
         relations = new ArrayList<>();
 
         buildRelations();
-
-
     }
 
     private State(HashMap<String, Block> block) {
         blocks = new HashMap<>();
 
-        for(Block b : block.values()){
+        for (Block b : block.values()) {
             blocks.put(b.get_name(), new Block(b));
         }
 
@@ -89,22 +76,19 @@ public class State implements IZustand{
 
     private void buildRelations() {
         relations = new ArrayList<>();
-        for(Block b : blocks.values()){
+        for (Block b : blocks.values()) {
             try {
                 b.isValid();
-                if(b.isOnTable()) relations.add(new MyTupel(TABLE, b.get_name()));
-                if(!b.isClear()) relations.add(new MyTupel(b.get_name(), b.blockOver()));
+                if (b.isOnTable()) relations.add(new MyTupel(TABLE, b.get_name()));
+                if (!b.isClear()) relations.add(new MyTupel(b.get_name(), b.blockOver()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-
     @Override
     public State copy() throws Exception {
-
-
         State state = new State(blocks);
 
         state.isValid();
@@ -113,33 +97,31 @@ public class State implements IZustand{
     }
 
     public State put_block_on_block(String blockToRotate, String onBlock) throws Exception {
-
-        if(blocks.get(blockToRotate).isClear()){
+        if (blocks.get(blockToRotate).isClear()) {
             State newState = this.copy();
 
             newState.isValid();
-
 
             Block blockRotate, newBlockUnderBlockRotate, oldBlockUnderBlockRotate;
             blockRotate = newState.blocks.get(blockToRotate);
             newBlockUnderBlockRotate = newState.blocks.get(onBlock);
             oldBlockUnderBlockRotate = newState.blocks.get(blockRotate.blockUnder());
 
-            if(newBlockUnderBlockRotate.equals(oldBlockUnderBlockRotate)) throw new Exception(ROTATE_ERROR);
-            if(!newBlockUnderBlockRotate.isClear()) throw new Exception(BLOCK_IS_NOT_CLEAR);
+            if (newBlockUnderBlockRotate.equals(oldBlockUnderBlockRotate)) throw new Exception(ROTATE_ERROR);
+            if (!newBlockUnderBlockRotate.isClear()) throw new Exception(BLOCK_IS_NOT_CLEAR);
 
             blockRotate.put_me_on_block(newBlockUnderBlockRotate.get_name());
             newBlockUnderBlockRotate.put_block_on_me(blockRotate.get_name());
 
-            if(oldBlockUnderBlockRotate != null) oldBlockUnderBlockRotate.clear();
+            if (oldBlockUnderBlockRotate != null) oldBlockUnderBlockRotate.clear();
 
             newState.buildRelations();
 
             newState.isValid();
 
-            if(oldBlockUnderBlockRotate == null){
+            if (oldBlockUnderBlockRotate == null) {
                 newState.setAction("puted " + blockRotate.get_name() + " from table to " + newBlockUnderBlockRotate.get_name());
-            }else{
+            } else {
                 newState.setAction("puted " + blockRotate.get_name() + " from " + oldBlockUnderBlockRotate.get_name() + " to " + newBlockUnderBlockRotate.get_name());
             }
             return newState;
@@ -147,13 +129,12 @@ public class State implements IZustand{
         throw new Exception(BLOCK_IS_NOT_CLEAR);
     }
 
-    public void setAction(String action){
+    public void setAction(String action) {
         this.action = action;
     }
 
     public State put_block_on_table(String block) throws Exception{
-
-        if(blocks.get(block).isClear()){
+        if (blocks.get(block).isClear()) {
             State newState = this.copy();
 
             newState.isValid();
@@ -178,28 +159,27 @@ public class State implements IZustand{
     }
 
     public void isValid() throws Exception{
-
-        for(Block b : blocks.values()){
+        for (Block b : blocks.values()) {
             b.isValid();
-            for(MyTupel tupel : relations){
-                if(tupel.containsBlock(b.get_name())){
-                    if(tupel.getUnder().equals(b.get_name())){
-                        if(b.isClear()){
+            for (MyTupel tupel : relations) {
+                if (tupel.containsBlock(b.get_name())) {
+                    if (tupel.getUnder().equals(b.get_name())) {
+                        if (b.isClear()) {
                             throw new Exception(BLOCK_IS_NOT_CLEAR + " " + b.get_name());
                         }
-                        if(tupel.getOver().equals(b.get_name())) throw new Exception(STATE_IS_NOT_VALID);
-                    }else{
-                        if(!b.isClear()){
+                        if (tupel.getOver().equals(b.get_name())) throw new Exception(STATE_IS_NOT_VALID);
+                    } else {
+                        if (!b.isClear()) {
                             //throw new Exception(BLOCK_IS_NOT_CLEAR + " " + b.get_name());
                         }
-                        if(tupel.getUnder().equals(b.get_name())) throw new Exception(STATE_IS_NOT_VALID);
+                        if (tupel.getUnder().equals(b.get_name())) throw new Exception(STATE_IS_NOT_VALID);
                     }
                 }
             }
         }
     }
 
-    public String showState(int rotations){
+    public String showState(int rotations) {
         String out = "";
         out += "\n--- State-Output-Begin---";
 
@@ -207,7 +187,7 @@ public class State implements IZustand{
         out += "\t Heuristik: " + heuristic + "\n\n";
 
         out += action + "\n\n";
-        for(MyTupel tupel : relations){
+        for (MyTupel tupel : relations) {
             out +=tupel.getUnder();
             out +=" --> ";
             out +=tupel.getOver();
@@ -217,34 +197,35 @@ public class State implements IZustand{
         return out;
     }
 
-    public boolean equals(State state){
-
+    public boolean equals(State state) {
         boolean result = true;
-        for(MyTupel tupelThis : relations) {
+
+        for (MyTupel tupelThis : relations) {
             boolean equal = false;
             for (MyTupel tupelState : state.relations) {
-                if(tupelThis.equals(tupelState)){
+                if (tupelThis.equals(tupelState)) {
                     equal = true;
                     break;
                 }
-
             }
-            if(!equal){
+
+            if (!equal) {
                 result = false;
                 break;
             }
         }
 
-        for(MyTupel tupelState : state.relations) {
+        for (MyTupel tupelState : state.relations) {
             boolean equal = false;
+
             for (MyTupel tupelThis : relations) {
-                if(tupelThis.equals(tupelState)) {
+                if (tupelThis.equals(tupelState)) {
                     equal = true;
                     break;
                 }
-
             }
-            if(!equal){
+
+            if (!equal) {
                 result = false;
                 break;
             }
@@ -253,11 +234,11 @@ public class State implements IZustand{
         return result;
     }
 
-    public Iterator getBlockIterator(){
+    public Iterator getBlockIterator() {
         return blocks.values().iterator();
     }
 
-    public Block getBlock(String name){
+    public Block getBlock(String name) {
         return blocks.get(name);
     }
 
@@ -268,26 +249,20 @@ public class State implements IZustand{
         //calculateTowerHeuristic(goalState);
 
         calculateDifference(goalState);
-
-
-
-
     }
 
-
-
     private void calculateTableHeuristic(State goalState) {
-        for(Block blockThis : blocks.values()){
+        for (Block blockThis : blocks.values()) {
             boolean end = false;
             Block actualBlock = blockThis;
-            if(blockThis.isOnTable()){
-                if(!goalState.getBlock(blockThis.get_name()).isOnTable()){
+            if (blockThis.isOnTable()) {
+                if (!goalState.getBlock(blockThis.get_name()).isOnTable()) {
                     heuristic++;
-                    while(!end){
-                        if(!actualBlock.isClear()){
+                    while(!end) {
+                        if (!actualBlock.isClear()) {
                             heuristic++;
                             actualBlock = blocks.get(actualBlock.blockOver());
-                        }else{
+                        } else {
                             end = true;
                         }
                     }
@@ -298,35 +273,35 @@ public class State implements IZustand{
     }
 
     private void calculateTowerHeuristic(State goalState) {
-        for(Block blockThis : blocks.values()){
+        for (Block blockThis : blocks.values()) {
             boolean end = false;
             Block actualBlock = blockThis;
-            if(blockThis.isOnTable()){
-                if(!goalState.getBlock(blockThis.get_name()).isOnTable()){
+            if (blockThis.isOnTable()) {
+                if (!goalState.getBlock(blockThis.get_name()).isOnTable()) {
                     heuristic++;
-                    while(!end){
-                        if(!actualBlock.isClear()){
+                    while(!end) {
+                        if (!actualBlock.isClear()) {
                             heuristic++;
                             actualBlock = blocks.get(actualBlock.blockOver());
-                        }else{
+                        } else {
                             end = true;
                         }
                     }
-                }else{
+                } else {
                     boolean towerIsNotEqual = false;
-                    while(!end){
-                        if(actualBlock.isClear()){
+                    while(!end) {
+                        if (actualBlock.isClear()) {
                             end = true;
-                        }else{
-                            if(!towerIsNotEqual){
-                                if(!actualBlock.equals(goalState.getBlock(actualBlock.get_name()))){
+                        } else {
+                            if (!towerIsNotEqual) {
+                                if (!actualBlock.equals(goalState.getBlock(actualBlock.get_name()))) {
                                     towerIsNotEqual = true;
                                 }
                             }
                             actualBlock = goalState.getBlock(actualBlock.blockOver());
                         }
 
-                        if(towerIsNotEqual){
+                        if (towerIsNotEqual) {
                             heuristic++;
                         }
                     }
@@ -336,34 +311,32 @@ public class State implements IZustand{
         //heuristic += depth;
     }
 
-    private void calculateDifference(State goalState){
-
-        for(Block blockThis : blocks.values()){
-            if(blockThis.isClear() != goalState.getBlock(blockThis.get_name()).isClear()) heuristic++;
-            if(blockThis.isOnTable() != goalState.getBlock(blockThis.get_name()).isOnTable()) heuristic++;
-            if(!blockThis.blockOver().equals(goalState.getBlock(blockThis.get_name()).blockOver())) heuristic++;
-            if(!blockThis.blockUnder().equals(goalState.getBlock(blockThis.get_name()).blockUnder())) heuristic++;
+    private void calculateDifference(State goalState) {
+        for (Block blockThis : blocks.values()) {
+            if (blockThis.isClear() != goalState.getBlock(blockThis.get_name()).isClear()) heuristic++;
+            if (blockThis.isOnTable() != goalState.getBlock(blockThis.get_name()).isOnTable()) heuristic++;
+            if (!blockThis.blockOver().equals(goalState.getBlock(blockThis.get_name()).blockOver())) heuristic++;
+            if (!blockThis.blockUnder().equals(goalState.getBlock(blockThis.get_name()).blockUnder())) heuristic++;
         }
         //heuristic += depth;
     }
 
-    public void setDepth(int depth){
+    public void setDepth(int depth) {
         this.depth = depth;
         this.depth++;
     }
 
-    public int getDepth(){
+    public int getDepth() {
         return depth;
     }
-    public int getHeuristic(){
+    public int getHeuristic() {
         return heuristic;
     }
 
-
-    public List<String> getBlockNames(){
+    public List<String> getBlockNames() {
 
         List<String> names = new ArrayList<>();
-        for(Block b : blocks.values()){
+        for (Block b : blocks.values()) {
             names.add(b.get_name());
         }
         return names;
