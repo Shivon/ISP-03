@@ -31,7 +31,7 @@ public class Algorithm {
         int rotations = 0;
         Path path;
         long timeStart = System.currentTimeMillis();
-        do{
+        do {
 
             path = tree.getFirstPath();
             success = goal(path.getFirstState(), goalState);
@@ -49,17 +49,15 @@ public class Algorithm {
                 insertNewPaths(tree,newpaths, path.getFirstState(), goalState);
             }
 
-        }while (!success);
+        } while (!success);
         timeEnd = System.currentTimeMillis() - timeStart;
         return path;
     }
 
     private static void insertNewPaths(MyTree openList, List<Path> newpaths, State actualState, State goalState) throws Exception {
-
         Path worstPath = null;
         List<Path> newPathTmp = new ArrayList<>(newpaths);
         openList.deleteFirstPath();
-
 
         switch (algorithmType) {
             case Depthsearch:
@@ -83,12 +81,16 @@ public class Algorithm {
                 }
                 break;
             case BergsteigenBacktracking:
+                // depth search which sorts the next child nodes
                 while (!newPathTmp.isEmpty()) {
                     worstPath = getWorstPath(newPathTmp);
                     openList.putAtFront(worstPath);
                 }
                 break;
             case Hill_Climbing:
+                // = optimistisches Bergsteigen
+                // nimmt den Kindknoten, der dem Zielzustand ähnlicher ist als der Elternknoten
+                // bei fehlender Verbesserung springt es zu einerm anderen Knoten der Open List
                 while (!newPathTmp.isEmpty()) {
                     worstPath = getWorstPath(newPathTmp);
                     openList.putAtFront(worstPath);
@@ -101,11 +103,13 @@ public class Algorithm {
                 }
                 break;
             case A_Star:
+                // sorts open list and picks best node
                 while (!newPathTmp.isEmpty()) {
                     //Findet den schlechtesten Kindknoten um ihn anschließend an die richtige position in der openlist zu legen
                     worstPath = getWorstPath(newPathTmp);
                     int index = -1;
                     boolean statesAreEqual = false;
+
                     for (Path p : openList.paths()) {
                         //Vergleich gefunden Zustand mit den bereits in der openlist enthaltenen Zuständen
                         if (!worstPath.getFirstState().equals(p.getFirstState())) {
@@ -113,8 +117,6 @@ public class Algorithm {
                                 index = openList.paths().indexOf(p);
                                 break;
                             }
-
-
                         } else {
                             statesAreEqual = true;
                             //else -> nicht notwendig, weil wenn beide Zustände gleich sind, impliziert es, dass der bereits in der openlist
@@ -133,11 +135,13 @@ public class Algorithm {
                 }
                 break;
             case Gierige_Bestensuche:
+                // sorts open list (like A_Star) but without acknowledging the previous costs
                 while (!newPathTmp.isEmpty()) {
                     //Findet den schlechtesten Kindknoten um ihn anschließend an die richtige position in der openlist zu legen
                     worstPath = getWorstPath(newPathTmp);
                     int index = -1;
                     boolean statesAreEqual = false;
+
                     for (Path p : openList.paths()) {
                         //Gleich wie A-Stern nur das bisherige Kosten nicht betrachtet werden. D.h. Alle neuen Pfade werden
                         //in die openlist gelegt.
@@ -218,7 +222,6 @@ public class Algorithm {
                                 }
                             }
                         }
-
                     }
                 }
             }

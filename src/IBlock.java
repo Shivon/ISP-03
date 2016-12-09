@@ -6,10 +6,10 @@ public interface IBlock {
     void clear() throws Exception;
 
     //Put block on table if block is clear
-    boolean put_on_table()throws Exception;
+    boolean put_on_table() throws Exception;
 
     //Put block on given block, if block is clear
-    boolean put_me_on_block(String block)throws Exception;
+    boolean put_me_on_block(String block) throws Exception;
 
     String get_name();
 
